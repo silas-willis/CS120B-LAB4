@@ -38,10 +38,10 @@ unsigned char tmpA = PINA ;
 		}
 		break; 
 	case POUND:
-		if(tmpA == 0x02){ // remain
+		if(tmpA == 0x02){ 
 		LOCK_STATE = Y ; 
 		}
-		else if(tmpA ==0x04 ){
+		else if((tmpA ==0x00) || (tmpA == 0x04) ){
 		LOCK_STATE = POUND ; 
 		}
 		else{
@@ -49,12 +49,12 @@ unsigned char tmpA = PINA ;
 		}
 		break; 
 	case Y: // door is unlocked
-		if(tmpA == 0x02){
-		LOCK_STATE = Y; 
-		}
-		else{
+//		if(tmpA == 0x02){
+//		LOCK_STATE = Y; 
+//		}
+//		else{
 		LOCK_STATE = INIT ; 
-		}
+//		}
 		break;
 	case X: // cant get to this state in current iteration 
 
@@ -73,7 +73,7 @@ unsigned char tmpA = PINA ;
 	}
 	switch(LOCK_STATE){
 	case INIT:
-		PORTB = 0x00 ; 
+	//	PORTB = 0x00 ; 
 		break;
 	case POUND:
 	
