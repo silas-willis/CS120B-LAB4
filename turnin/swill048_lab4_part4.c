@@ -13,14 +13,9 @@
 #endif
 
 
-    /* Insert DDR and PORT initializations */
-
-
-    /* Insert your solution below */
 enum LOCK { INIT,POUND, LOCK, UNLOCK, X, LOCK_INSIDE}LOCK_STATE ; 
 unsigned char POUND_OK = 0 ; 
 unsigned char Y_OK = 0 ; 
-
 unsigned char lock = 0x00 ; 
 
 
@@ -29,116 +24,117 @@ void TickToggle( ) { // state transitions
 
 unsigned char tmpA = PINA ; 
 
-  
-//# = PA2 
-//Y = PA1
-//X = PA0 
-	switch(LOCK_STATE){
-	 
-	case INIT: 
-		released = 0 ; 
-	if(lock == 0x00){  // locked, begin unlock sequence
-		if(tmpA == 0x04){
-			LOCK_STATE = POUND ; 
-		}		
-		else{
-			LOCK_STATE = INIT ; 
+switch(LOCK_STATE){
+case INIT: 
+	if(tmpA == 0x04){
+		if(lock == 0x00){
+			LOCK_STATE = POUND ; 			
 		}
-	}	
-	else if(lock == 0x01){ // unlocked, begin lcoking sequence
-		if(tmpA== 0x04){
+		else if(lock == 0x01){
 			LOCK_STATE = POUND ; 
 		}
 		else{
-			LOCK_STATE = INIT ; 
+		LOCK_STATE = INIT ; 
 		}
-	}	
-	else if(tmpA == 0x80){ // lcck from inside
-		LOCK_STATE = LOCK_INSIDE ; 
-		}
+	}
+	else if(tmpA == 0x80){
+	LOCK_STATE = LOCK_INSIDE ; 
+	}
+
+break ; 
+case POUND:
+if((POUND_OK == 1) && (tmpA == 0x02)){
+	if(lock == 0x00){
+		LOCK_STATE = UNLOCK ; 
+	}
+	else if(lock == 0x01){
+		LOCK_STATE = LOCK ; 
+	}
 	else{
-		LOCK_STATE = INIT ; 
+	LOCK_STATE = INIT ; 
 	}
-	break; 
-	case POUND:
-	if((POUND_OK == 1) && (tmpA == 0x02)){
-		if(lock ==0x00){ //continue unlcok
-			LOCK_STATE = UNLOCK ; //correct passcode has been entered
-		}		
-		else if(lock ==0x01){ //continue lock 
-			LOCK_STATE = LOCK ; 
-		}
+}
+else if(POUND_OK == 0){  // wait for un pressing 
+	if(tmpA == 0x00){
+	POUND_OK = 1 ; 
+	LOCK_STATE = POUND ; 
 	}
-	else if((POUND_OK == 0) && (tmpA == 0x00))
+	else if(tmpA == 0x04){
+	LOCK_STATE = POUND ; 
+	}
+	else{ // if anything other than PA2 is pressed 
+	LOCK_STATE = INIT ; 
+	}
+}
+break; 
+case LOCK:
+	lock = 0x00 ; 
+	PORTB = lock ; 
+	LOCK_STATE = INIT ; 
 
+break ; 
+case UNLOCK:
+	lock = 0x01 ; 
+	PORTB = lock ; 
+	LOCK_STATE = INIT ; 
+break; 
 
-
-	if((tmpA == 0x02 ) && (released == 1)){ 
-		LOCK_STATE = Y ; 
-		}
-		else if((tmpA ==0x00) ){
-		released = 1 ; 
-		LOCK_STATE = POUND ; 
-		}
-		else if(tmpA == 0x04){
-		LOCK_STATE = POUND ; 
-		}
-		else{
-		LOCK_STATE = INIT ; 
-		}
-		break; 
-	case Y: // door is unlocked, remain until A7 
- 	
-		LOCK_STATE = INIT ; 
-
-		break;
-	case X: // cant get to this state in current iteration 
-
-		break; 
-	case LOCK_INSIDE:
-		if(tmpA == 0x80){ //remain in this state 
+case X:
+// do nothing 
+break ; 
+case LOCK_INSIDE:
+	if(tmpA == 0x80){
 		LOCK_STATE = LOCK_INSIDE ; 
-		}
-		else{
+	}	
+	else{		
+		lock = 0x08 ; 
+		PORTB = lock ; 
 		LOCK_STATE = INIT ; 
-		}
+	}
+break; 
+default:
+break ; 
 
-		break; 
-	default:
-		break; 
+
+
+
+
 	}
 	switch(LOCK_STATE){
-	
 	case INIT:
-		PORTB = lock ; 
-		break;
+
+	break ; 
 	case POUND:
-			
-		break; 
-	case Y:
-		lock = 0x01; 
-		PORTB = lock; 
-		break; 
+
+	break ; 
+	case LOCK:
+
+	break; 
+	case UNLOCK:
+
+	break; 
 	case X:
 
-		break; 
+	break ; 
 	case LOCK_INSIDE:
-		lock = 0x00 ; 
-		PORTB = lock ;  
-		break;
+	
+	break; 
 	default:
-		break;
+	break ; 
+
+
+
 	}
-
-
 }
 int main(void){
-DDRA = 0x00 ; PORTA = 0xFF ; 
-DDRB = 0xFF ; PORTB = 0x00 ;  
-//unsigned char tmpA = 0x00 ; 
- LOCK_STATE = INIT ;  //fixme 
-   while (1) { 
-	 TickToggle() ; 
-    }
-    return 1;
+DDRA = 0x00 ; PORTA = 0xFF ;
+DDRB = 0xFF ; PORTB = 0x00 ; 
+
+LOCK_STATE = INIT ; 
+while(1){
+	TickToggle() ; 
+
 }
+return 1 ; 
+}
+
