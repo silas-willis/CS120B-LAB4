@@ -19,11 +19,11 @@
     /* Insert your solution below */
 enum LOCK { INIT, POUND, Y, X, LOCK}LOCK_STATE ; 
 unsigned char released = 0 ; 
-
+unsigned char lock = 0x00 ; 
 void TickToggle( ) { // state transitions
 
 unsigned char tmpA = PINA ; 
-unsigned char lock = 0x00 ;
+
   
 //# = PA2 
 //Y = PA1
@@ -58,7 +58,7 @@ unsigned char lock = 0x00 ;
 		}
 		break; 
 	case Y: // door is unlocked, remain until A7 
-		lock = 0x01 ; 	
+//		lock = 0x01 ; 	
 		LOCK_STATE = INIT ; 
 
 		break;

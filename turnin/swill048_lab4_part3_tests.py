@@ -17,8 +17,8 @@
 tests = [{'description': 'PA0 = 0 -> PA0 = 1, PA0 = 0, PA0 = 1 -> B0 = 1 ',
     'steps': [ {'inputs': [('PINA', 0x04)],'iterations': 1},   # Set PIN to val then run one iteration
        {'inputs': [('PINA',0x00)], 'iterations': 1 }, # Set PIN to val then run 300 ms
-	{'inputs': [('PINA', 0x00)], 'iterations':1 },
-       {'inputs': [('PINA', 0x02)], 'iterations': 1}, 
+	{'inputs': [('PINA', 0x02)], 'iterations':1 },
+       {'inputs': [('PINA', 0x00)], 'iterations': 1}, 
     	{'inputs': [('PINA', 0x00)], 'iterations': 1}, ],
 'expected': [('PORTB',0x01)],
     },
