@@ -17,19 +17,21 @@
 
 
     /* Insert your solution below */
-enum LOCK {START, INIT, POUND, Y, X, LOCK}LOCK_STATE ; 
+enum LOCK { INIT, POUND, Y, X, LOCK}LOCK_STATE ; 
+unsigned char released = 0 ; 
+
 void TickToggle( ) { // state transitions
 
 unsigned char tmpA = PINA ; 
-unsigned char lock = 0x00 ; 
+unsigned char lock = 0x00 ;
+  
 //# = PA2 
 //Y = PA1
 //X = PA0 
 	switch(LOCK_STATE){
-	case START:
-		LOCK_STATE = INIT ; 
-		break ; 
+	 
 	case INIT: 
+		released = 0 ; 
 		if(tmpA == 0x04){//go to POUND
 		LOCK_STATE = POUND ; 
 		}	
@@ -41,10 +43,14 @@ unsigned char lock = 0x00 ;
 		}
 		break; 
 	case POUND:
-		if(tmpA == 0x02){ 
+		if((tmpA == 0x02 ) && (released == 1)){ 
 		LOCK_STATE = Y ; 
 		}
-		else if((tmpA ==0x00) || (tmpA == 0x04) ){
+		else if((tmpA ==0x00) ){
+		released = 1 ; 
+		LOCK_STATE = POUND ; 
+		}
+		else if(tmpA == 0x04){
 		LOCK_STATE = POUND ; 
 		}
 		else{
@@ -73,13 +79,11 @@ unsigned char lock = 0x00 ;
 	}
 	switch(LOCK_STATE){
 	
-	case START:
-		break ; 
 	case INIT:
 		PORTB = lock ; 
 		break;
 	case POUND:
-	
+			
 		break; 
 	case Y:
 		lock = 0x01; 
@@ -102,7 +106,7 @@ int main(void){
 DDRA = 0x00 ; PORTA = 0xFF ; 
 DDRB = 0xFF ; PORTB = 0x00 ;  
 //unsigned char tmpA = 0x00 ; 
- LOCK_STATE = START ;  //fixme 
+ LOCK_STATE = INIT ;  //fixme 
    while (1) { 
 	 TickToggle() ; 
     }
