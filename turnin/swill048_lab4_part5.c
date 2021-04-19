@@ -52,7 +52,7 @@ case INIT:
 	else if(tmpA == 0x02){ // check for y
 		pass[counter] = Y ; 
 		++counter ; 
-		LOCK_STATE = INIT : 
+		LOCK_STATE = INIT ; 
 	} 
 	else if(tmpA == 0x04){   // check for #
 		pass[counter] = POUND ; 
